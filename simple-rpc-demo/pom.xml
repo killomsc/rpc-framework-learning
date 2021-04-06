@@ -13,7 +13,6 @@
         <module>simple-rpc-demo-api</module>
         <module>simple-rpc-demo-provider</module>
         <module>simple-rpc-demo-consumer</module>
-        <module>s</module>
         <module>simple-rpc-demo-framework</module>
     </modules>
     <artifactId>simple-rpc-demo</artifactId>
