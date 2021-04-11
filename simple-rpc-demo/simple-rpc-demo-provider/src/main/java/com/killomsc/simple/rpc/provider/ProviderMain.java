@@ -1,6 +1,10 @@
 package com.killomsc.simple.rpc.provider;
 
+import com.killomsc.simple.rpc.api.UserService;
 import com.killomsc.simple.rpc.framework.common.DemoConfig;
+import com.killomsc.simple.rpc.framework.model.RpcRequest;
+import com.killomsc.simple.rpc.framework.register.RegisterService;
+import com.killomsc.simple.rpc.provider.impl.UserServiceImpl;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -31,14 +35,12 @@ public class ProviderMain {
             ObjectOutputStream outputStream = null;
             try {
                 inputStream = new ObjectInputStream(client.getInputStream());
-                String interfaceName = inputStream.readUTF();
-                Class<?> service = Class.forName(interfaceName);
-                String methodName = inputStream.readUTF();
-                Class<?>[] parameterTypes = (Class<?>[]) inputStream.readObject();
-                Object[] arguments = (Object[]) inputStream.readObject();
-                Method method = service.getMethod(methodName, parameterTypes);
-                Object result = method.invoke(service.newInstance(), arguments);
                 outputStream = new ObjectOutputStream(client.getOutputStream());
+
+                RpcRequest rpcRequest = (RpcRequest) inputStream.readObject();
+                Object service = RegisterService.get(rpcRequest.getClassName());
+                Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
+                Object result = method.invoke(service, rpcRequest.getParameters());
                 outputStream.writeObject(result);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -48,6 +50,10 @@ public class ProviderMain {
         }
     }
 
+    /**
+     * 提供者发布远程调用服务
+     * @throws IOException
+     */
     public static void publish() throws IOException {
         ServerSocket socket = new ServerSocket();
         socket.bind(new InetSocketAddress(DemoConfig.RegisterIp, DemoConfig.RegisterPort));
@@ -62,8 +68,20 @@ public class ProviderMain {
 
     }
 
+    /**
+     * 注册服务
+     */
+    private static void register() {
+        UserService userService = new UserServiceImpl();
+        RegisterService.register(UserService.class.getName(), userService);
+    }
+
 
     public static void main(String[] args) throws IOException {
+
+        // 注册
+        register();
+
         // 将本地服务，发布成远程服务
         publish();
 

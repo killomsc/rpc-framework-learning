@@ -10,6 +10,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>simple-rpc-demo-consumer</artifactId>
-
+    <dependencies>
+        <dependency>
+            <groupId>com.killomsc</groupId>
+            <artifactId>simple-rpc-demo-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.killomsc</groupId>
+            <artifactId>simple-rpc-demo-framework</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 </project>
